@@ -20,8 +20,17 @@ func printList(node *Node) {
 		printList(node.next)
 	}
 }
+
+func printListReverse(node *Node) {
+	if node.next != nil {
+		printListReverse(node.next)
+	}
+	fmt.Println(node)
+}
+
 func main() {
 	node := Node{value: 1}
 	node.createNode(2).createNode(3).createNode(4)
 	printList(&node)
+	printListReverse(&node)
 }
