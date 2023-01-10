@@ -14,18 +14,17 @@ type Subscriber struct {
 }
 
 func subscriberFromRow(rows *sql.Rows) (*Subscriber, error) {
-	var id int64
-	var email string
-	var confirmedAt int64
-	var optOut bool
-
-	err := rows.Scan(&id, &email, &confirmedAt, &optOut)
+	var (
+		s           Subscriber
+		confirmedAt int64
+	)
+	err := rows.Scan(&s.Id, &s.Email, &confirmedAt, &s.OptOut)
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
-	t := time.Unix(confirmedAt, 0)
-	return &Subscriber{Id: id, Email: email, ConfirmedAt: t, OptOut: optOut}, nil
+	s.ConfirmedAt = time.Unix(confirmedAt, 0)
+	return &s, nil
 }
 
 func CreateSubscriber(db *sql.DB, email string) error {
@@ -45,11 +44,11 @@ func GetSubscriber(db *sql.DB, email string) (*Subscriber, error) {
 	SELECT id, email, confirmed_at, opt_out
 	FROM emails
 	WHERE email = ?`, email)
-	defer rows.Close()
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
+	defer rows.Close()
 	if rows.Next() {
 		return subscriberFromRow(rows)
 	}

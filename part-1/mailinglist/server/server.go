@@ -16,10 +16,10 @@ const (
 func main() {
 	log.Printf("using database '%v'\n", DbPath)
 	db, err := sql.Open("sqlite3", DbPath)
-	defer db.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer db.Close()
 	log.Printf("starting JSON API server...\n")
 	jsonapi.Serve(db, Port)
 }

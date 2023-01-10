@@ -10,10 +10,13 @@ import (
 	"net/http"
 )
 
-func fromJson[T any](body io.Reader, target T) {
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(body)
+func fromJson[T any](body io.Reader, target T) error {
+	buf := &bytes.Buffer{}
+	if _, err := buf.ReadFrom(body); err != nil {
+		return err
+	}
 	json.Unmarshal(buf.Bytes(), &target)
+	return nil
 }
 
 func returnJson[T any](w http.ResponseWriter, withData func() (T, error)) {
@@ -47,11 +50,14 @@ func returnErr(w http.ResponseWriter, err error, code int) {
 
 func CreateSubscriber(db *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "POST" {
+		if r.Method != http.MethodPost {
 			return
 		}
-		sub := mdb.Subscriber{}
-		fromJson(r.Body, &sub)
+		var sub mdb.Subscriber
+		if err := fromJson(r.Body, &sub); err != nil {
+			log.Printf("Reading file error: %v", err)
+			return
+		}
 		if err := mdb.CreateSubscriber(db, sub.Email); err != nil {
 			returnErr(w, err, 400)
 			return
@@ -65,11 +71,14 @@ func CreateSubscriber(db *sql.DB) http.Handler {
 
 func GetSubscriber(db *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "GET" {
+		if r.Method != http.MethodGet {
 			return
 		}
-		sub := mdb.Subscriber{}
-		fromJson(r.Body, &sub)
+		var sub mdb.Subscriber
+		if err := fromJson(r.Body, &sub); err != nil {
+			log.Printf("Reading file error: %v", err)
+			return
+		}
 		returnJson(w, func() (interface{}, error) {
 			log.Printf("JSON GetSubscriber: %v\n", sub.Email)
 			return mdb.GetSubscriber(db, sub.Email)
@@ -79,11 +88,14 @@ func GetSubscriber(db *sql.DB) http.Handler {
 
 func UpdateSubscriber(db *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "PUT" {
+		if r.Method != http.MethodPut {
 			return
 		}
-		sub := mdb.Subscriber{}
-		fromJson(r.Body, &sub)
+		var sub mdb.Subscriber
+		if err := fromJson(r.Body, &sub); err != nil {
+			log.Printf("Reading file error: %v", err)
+			return
+		}
 		if err := mdb.UpdateSubscriber(db, sub); err != nil {
 			returnErr(w, err, 400)
 			return
@@ -97,11 +109,14 @@ func UpdateSubscriber(db *sql.DB) http.Handler {
 
 func CancelSubscription(db *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "POST" {
+		if r.Method != http.MethodPost {
 			return
 		}
-		sub := mdb.Subscriber{}
-		fromJson(r.Body, &sub)
+		var sub mdb.Subscriber
+		if err := fromJson(r.Body, &sub); err != nil {
+			log.Printf("Reading file error: %v", err)
+			return
+		}
 		if err := mdb.CancelSubscription(db, sub.Email); err != nil {
 			returnErr(w, err, 400)
 			return
