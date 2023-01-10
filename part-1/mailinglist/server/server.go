@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	DbPath = "list.db"
-	Port   = ":8080"
+	DbPath     = "list.db"
+	ServerPort = ":8080"
 )
 
 func main() {
@@ -21,5 +21,5 @@ func main() {
 	}
 	defer db.Close()
 	log.Printf("starting JSON API server...\n")
-	jsonapi.Serve(db, Port)
+	jsonapi.Serve(db, ServerPort)
 }

@@ -15,8 +15,7 @@ func fromJson[T any](body io.Reader, target T) error {
 	if _, err := buf.ReadFrom(body); err != nil {
 		return err
 	}
-	json.Unmarshal(buf.Bytes(), &target)
-	return nil
+	return json.Unmarshal(buf.Bytes(), &target)
 }
 
 func returnJson[T any](w http.ResponseWriter, withData func() (T, error)) {
