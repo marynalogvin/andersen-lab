@@ -18,9 +18,8 @@ func logResponce(res *proto.SubscriberResponse, err error) {
 	if res.Subscriber == nil {
 		log.Printf("email not found")
 
-	} else {
-		log.Printf("responce:%v", res.Subscriber)
 	}
+	log.Printf("responce:%v", res.Subscriber)
 }
 
 func createSubscriber(client proto.MailingListServiceClient, email string) *proto.Subscriber {

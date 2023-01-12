@@ -58,7 +58,7 @@ func (s *MailServer) CreateSubscriber(ctx context.Context, req *proto.CreateSubs
 	log.Printf("gRPC CreateSubscriber: %v\n", req)
 
 	if err := mdb.CreateSubscriber(s.db, req.EmailAddr); err != nil {
-		return &proto.SubscriberResponse{}, err
+		return nil, err
 	}
 	return subscriberResponce(s.db, req.EmailAddr)
 }
