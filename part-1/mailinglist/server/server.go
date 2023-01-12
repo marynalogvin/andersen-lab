@@ -3,7 +3,8 @@ package main
 import (
 	"database/sql"
 	"log"
-	"mailinglist/jsonapi"
+	"mailinglist/grpcapi"
+	_ "mailinglist/jsonapi"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -20,6 +21,10 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-	log.Printf("starting JSON API server...\n")
-	jsonapi.Serve(db, ServerPort)
+
+	log.Printf("starting gRPC API server...\n")
+	grpcapi.Serve(db, ServerPort)
+	// log.Printf("starting JSON API server...\n")
+	// jsonapi.Serve(db, ServerPort)
+
 }
